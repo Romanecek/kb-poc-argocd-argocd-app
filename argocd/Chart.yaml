@@ -1,0 +1,9 @@
+apiVersion: v2
+name: argocd
+
+version: 1.0.0
+
+dependencies: # A list of the chart requirements (optional)
+  - name: argo-cd
+    version: 7.4.3
+    repository: https://argoproj.github.io/argo-helm

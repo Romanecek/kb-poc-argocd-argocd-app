@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Release.Name }}-argocd
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: {{ .Release.Name }}
+    app.kubernetes.io/app-name: {{ .Release.Name }}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: {{ .Release.Namespace }}
+    server: 'https://kubernetes.default.svc'
+  project: default
+  sources:
+    - path: argocd
+      repoURL: 'git@github.com:Romanecek/kb-poc-argocd-argocd-app.git' 
+      targetRevision: main
+      helm:
+        valueFiles:
+        - ../values.yaml
+        - $values/{{ .Release.Namespace }}/values.yaml
+    - repoURL: 'git@github.com:Romanecek/kb-poc-argo-central.git'
+      path: {{ .Release.Namespace }}
+      targetRevision: tenants
+      directory:
+        include: values.yaml
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
